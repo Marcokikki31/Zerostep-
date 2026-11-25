@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZeroStep</title>
+  <style>
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      background: #F4F5F3;
+      color: #111827;
+      padding: 18px;
+    }
+    .box {
+      max-width: 480px;
+      margin: 0 auto;
+      background: #FFFFFF;
+      border: 1px solid #E5E7EB;
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(17, 24, 39, 0.06);
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #111827;
+    }
+    .pill-status {
+      background: #ECFDF5;
+      color: #047857;
+      border: 1px solid #A7F3D0;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 999px;
+    }
+    p.sub {
+      margin: 0 0 18px;
+      color: #6B7280;
+      font-size: 14px;
+    }
+    .section-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #6B7280;
+      margin: 0 0 8px;
+    }
+    .row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    button.chip {
+      background: #F9FAFB;
+      color: #374151;
+      border: 1px solid #D1D5DB;
+      border-radius: 12px;
+      padding: 9px 13px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button.chip.active {
+      background: #111827;
+      color: #FFFFFF;
+      border-color: #111827;
+      font-weight: 700;
+    }
+    button.primary {
+      width: 100%;
+      background: #059669;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 16px;
+      padding: 15px;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      margin-top: 6px;
+      box-shadow: 0 6px 16px rgba(5, 150, 105, 0.22);
+    }
+    button.secondary {
+      width: 100%;
+      background: #F9FAFB;
+      color: #111827;
+      border: 1px solid #D1D5DB;
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    button.unlock60 {
+      width: 100%;
+      background: #FEF3C7;
+      color: #92400E;
+      border: 1px solid #F59E0B;
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .card {
+      background: #F9FAFB;
+      border: 1px solid #E5E7EB;
+      border-radius: 20px;
+      padding: 18px;
+      margin-top: 18px;
+    }
+    .tag {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      background: #EEF2FF;
+      color: #3730A3;
+      border: 1px solid #C7D2FE;
+      padding: 5px 11px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+    }
+    .move-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #111827;
+      margin: 0 0 8px;
+      line-height: 1.25;
+    }
+    .move-desc {
+      color: #4B5563;
+      font-size: 14px;
+      margin: 0 0 14px;
+      line-height: 1.45;
+    }
+    .timer {
+      font-size: 32px;
+      font-weight: 900;
+      text-align: center;
+      margin: 12px 0;
+      color: #059669;
+      background: #ECFDF5;
+      border: 1px solid #A7F3D0;
+      border-radius: 16px;
+      padding: 10px;
+    }
+    .stats {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid #E5E7EB;
+      font-size: 13px;
+      color: #6B7280;
+      text-align: center;
+    }
+    .stats strong {
+      color: #111827;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="topbar">
+      <h1>ZeroStep</h1>
+      <span class="pill-status">Modalita Svolta</span>
+    </div>
+    <p class="sub">Una sola mossa concreta. Zero indecisione · 60 mosse.</p>
+
+    <div class="section-label">Tempo disponibile</div>
+    <div class="row" id="timeChips">
+      <button type="button" class="chip active" onclick="setTime(this, 5)">5 min</button>
+      <button type="button" class="chip" onclick="setTime(this, 15)">15 min</button>
+      <button type="button" class="chip" onclick="setTime(this, 30)">30 min</button>
+    </div>
+
+    <div class="section-label">Energia attuale</div>
+    <div class="row" id="energyChips">
+      <button type="button" class="chip active" onclick="setEnergy(this, 'Riserva')">Riserva</button>
+      <button type="button" class="chip" onclick="setEnergy(this, 'Operativo')">Operativo</button>
+      <button type="button" class="chip" onclick="setEnergy(this, 'Al Massimo')">Al Massimo</button>
+    </div>
+
+    <div class="section-label">Categoria</div>
+    <div class="row" id="catChips">
+      <button type="button" class="chip active" onclick="setCat(this, 'Tutte')">Tutte</button>
+      <button type="button" class="chip" onclick="setCat(this, 'Mente')">Mente</button>
+      <button type="button" class="chip" onclick="setCat(this, 'Corpo')">Corpo</button>
+      <button type="button" class="chip" onclick="setCat(this, 'Spazio')">Spazio</button>
+      <button type="button" class="chip" onclick="setCat(this, 'Lavoro e Progetti')">Lavoro e Progetti</button>
+      <button type="button" class="chip" onclick="setCat(this, 'Studio e Crescita')">Studio e Crescita</button>
+      <button type="button" class="chip" onclick="setCat(this, 'Soldi e Relazioni')">Soldi e Relazioni</button>
+    </div>
+
+    <button type="button" class="primary" onclick="pickMove()">DAMMI LA MOSSA</button>
+
+    <div class="card" id="moveCard" style="display:none;">
+      <div class="tag" id="moveMeta"></div>
+      <div class="move-title" id="moveTitle"></div>
+      <div class="move-desc" id="moveDesc"></div>
+      <div class="timer" id="timerDisplay">05:00</div>
+      <button type="button" class="primary" onclick="toggleTimer()" id="timerBtn">AVVIA TIMER</button>
+      <button type="button" class="unlock60" onclick="activate60s()">SBLOCCO 60s</button>
+      <button type="button" class="secondary" onclick="completeMove()">FATTO — PUNTO PER ME</button>
+    </div>
+
+    <div class="stats">Mosse completate oggi: <strong id="doneCount">0</strong></div>
+  </div>
+
+  <script>
+    var MOVES = [
+      { title: "Scrivi la singola priorita di oggi", desc: "Apri una nota o un foglio e scrivi una sola frase chiara.", min: 5, energy: "Riserva", cat: "Mente" },
+      { title: "Fai 10 respiri lenti a occhi chiusi", desc: "Inspira per 4 secondi ed espira per 6 secondi senza controllare l'ora.", min: 5, energy: "Riserva", cat: "Mente" },
+      { title: "Scarica i pensieri che ronzano in testa", desc: "Butta giu in elenco tutto quello che ti distrae, senza ordinarlo.", min: 5, energy: "Operativo", cat: "Mente" },
+      { title: "Decidi cosa NON farai oggi", desc: "Scegli una cosa da rimandare o eliminare per alleggerire la mente.", min: 5, energy: "Operativo", cat: "Mente" },
+      { title: "Fai un check onesto della tua energia", desc: "Chiediti cosa ti sta rubando attenzione ora e chiudi una scheda o app.", min: 5, energy: "Riserva", cat: "Mente" },
+      { title: "Scomponi un blocco in 3 micro-passi", desc: "Prendi una cosa che rimandi e scrivi i primi 3 passi minuscoli.", min: 15, energy: "Operativo", cat: "Mente" },
+      { title: "Pratica 15 minuti di silenzio digitale", desc: "Niente notifiche, social o sottofondo rumoroso: solo calma.", min: 15, energy: "Riserva", cat: "Mente" },
+      { title: "Riformula un problema in una domanda utile", desc: "Trasforma una preoccupazione in Come posso fare X in modo semplice.", min: 15, energy: "Operativo", cat: "Mente" },
+      { title: "Sessione di scrittura libera profonda", desc: "Scrivi senza fermarti su cio che vuoi sbloccare questa settimana.", min: 30, energy: "Al Massimo", cat: "Mente" },
+      { title: "Pianifica il prossimo blocco di focus", desc: "Definisci un obiettivo chiaro e prepara l'ambiente prima di iniziare.", min: 30, energy: "Al Massimo", cat: "Mente" },
+
+      { title: "Bevi un bicchiere d'acqua pieno", desc: "Fallo subito prima di aprire altre schermate o messaggi.", min: 5, energy: "Riserva", cat: "Corpo" },
+      { title: "Sciogli collo, spalle e schiena", desc: "Fai movimenti lenti e circolari per liberare la rigidita.", min: 5, energy: "Riserva", cat: "Corpo" },
+      { title: "Alzati e fai 2 minuti di stretching in piedi", desc: "Allunga braccia, fianchi e gambe accanto alla sedia o al divano.", min: 5, energy: "Operativo", cat: "Corpo" },
+      { title: "Lavati il viso con acqua fresca", desc: "Reset rapido per schiarire lo sguardo e riprendere presenza.", min: 5, energy: "Riserva", cat: "Corpo" },
+      { title: "Fai 20 squat o piegamenti dolci", desc: "Attiva la circolazione con un breve richiamo muscolare.", min: 5, energy: "Al Massimo", cat: "Corpo" },
+      { title: "Camminata veloce all'aria aperta", desc: "Esci per 15 minuti a passo sostenuto senza fissare il telefono.", min: 15, energy: "Operativo", cat: "Corpo" },
+      { title: "Routine di mobilita articolare completa", desc: "Dedica 15 minuti a caviglie, anche, colonna e spalle.", min: 15, energy: "Riserva", cat: "Corpo" },
+      { title: "Prepara uno spuntino sano e nutriente", desc: "Frutta, frutta secca o yogurt invece di cibo frettoloso.", min: 15, energy: "Operativo", cat: "Corpo" },
+      { title: "Allenamento attivo di 30 minuti", desc: "Corsa, bici, circuito a corpo libero o sessione fisica decisa.", min: 30, energy: "Al Massimo", cat: "Corpo" },
+      { title: "Recupero profondo e reset corporeo", desc: "Mezz'ora di allungamenti dolci, respirazione e decompressione.", min: 30, energy: "Riserva", cat: "Corpo" },
+
+      { title: "Libera la superficie davanti a te", desc: "Togli oggetti inutili, carte o tazze da dove sei seduto.", min: 5, energy: "Riserva", cat: "Spazio" },
+      { title: "Butta 5 oggetti o carte fuori posto", desc: "Fai un giro veloce di 5 minuti con un sacchetto o cestino.", min: 5, energy: "Operativo", cat: "Spazio" },
+      { title: "Apri una finestra per far entrare aria", desc: "Cambia aria alla stanza e sistema la luce intorno a te.", min: 5, energy: "Riserva", cat: "Spazio" },
+      { title: "Pulisci lo schermo del telefono o del PC", desc: "Passa un panno morbido e chiudi le schede aperte superflue.", min: 5, energy: "Operativo", cat: "Spazio" },
+      { title: "Rifai o riordina la zona letto o divano", desc: "Rendila pulita e accogliente in pochi minuti.", min: 5, energy: "Riserva", cat: "Spazio" },
+      { title: "Riordina la scrivania o il piano di lavoro", desc: "Lascia solo cio che serve per la prossima azione.", min: 15, energy: "Operativo", cat: "Spazio" },
+      { title: "Svuota e sistema un cassetto o una borsa", desc: "Elimina cio che non serve e rimetti a posto il resto.", min: 15, energy: "Operativo", cat: "Spazio" },
+      { title: "Sistema l'ingresso o la cucina essenziale", desc: "Riduci il disordine visivo nelle zone di passaggio.", min: 15, energy: "Al Massimo", cat: "Spazio" },
+      { title: "Riordino profondo di una stanza", desc: "Dedica 30 minuti a rimettere ordine in modo netto in un ambiente.", min: 30, energy: "Al Massimo", cat: "Spazio" },
+      { title: "Decluttering mirato di abiti o oggetti", desc: "Separa cio che usi davvero da cio che puoi donare o vendere.", min: 30, energy: "Operativo", cat: "Spazio" },
+
+      { title: "Apri il file o documento del progetto", desc: "Aprilo soltanto e leggi l'ultima riga scritta per rientrare nel flusso.", min: 5, energy: "Riserva", cat: "Lavoro e Progetti" },
+      { title: "Rispondi a un messaggio breve in sospeso", desc: "Chiudi una comunicazione rapida e toglila dalla testa.", min: 5, energy: "Operativo", cat: "Lavoro e Progetti" },
+      { title: "Scrivi il prossimo passo di un progetto fermo", desc: "Definisci l'azione successiva concreta per sbloccarlo.", min: 5, energy: "Riserva", cat: "Lavoro e Progetti" },
+      { title: "Rinomina o archivia 5 file sparsi", desc: "Fai pulizia rapida nella cartella di lavoro attuale.", min: 5, energy: "Operativo", cat: "Lavoro e Progetti" },
+      { title: "Prepara l'agenda dei prossimi 15 minuti", desc: "Scegli un solo compito e metti il telefono in silenzioso.", min: 5, energy: "Al Massimo", cat: "Lavoro e Progetti" },
+      { title: "Avanza su un compito pratico per 15 minuti", desc: "Lavora su un deliverable concreto senza perfezionismo.", min: 15, energy: "Operativo", cat: "Lavoro e Progetti" },
+      { title: "Pulisci la casella email o i messaggi chiave", desc: "Archivia, rispondi o trasforma in attivita cio che conta.", min: 15, energy: "Operativo", cat: "Lavoro e Progetti" },
+      { title: "Aggiorna lo stato di avanzamento di un progetto", desc: "Segna cosa e fatto, cosa e in corso e qual e il prossimo step.", min: 15, energy: "Al Massimo", cat: "Lavoro e Progetti" },
+      { title: "Sessione di esecuzione mirata da 30 minuti", desc: "Un solo progetto, zero distrazioni, fino a completare un blocco reale.", min: 30, energy: "Al Massimo", cat: "Lavoro e Progetti" },
+      { title: "Rivedi e riorganizza la pipeline dei progetti", desc: "Fai ordine sulle priorita della settimana e taglia i rami secchi.", min: 30, energy: "Operativo", cat: "Lavoro e Progetti" },
+
+      { title: "Leggi 2 pagine o un breve paragrafo", desc: "Inizia piano per rompere l'attrito iniziale.", min: 5, energy: "Riserva", cat: "Studio e Crescita" },
+      { title: "Salva un articolo o video da studiare dopo", desc: "Mettilo in una lista dedicata cosi non ti distrae adesso.", min: 5, energy: "Riserva", cat: "Studio e Crescita" },
+      { title: "Riassumi in 3 righe cio che hai imparato", desc: "Fissa un concetto recente con parole tue.", min: 5, energy: "Operativo", cat: "Studio e Crescita" },
+      { title: "Ripassa una flashcard, formula o parola chiave", desc: "Breve richiamo attivo per allenare la memoria.", min: 5, energy: "Operativo", cat: "Studio e Crescita" },
+      { title: "Fai una domanda chiave sull'argomento", desc: "Chiediti cosa non ti e ancora chiaro per guidare lo studio.", min: 5, energy: "Al Massimo", cat: "Studio e Crescita" },
+      { title: "Studia un tema per 15 minuti con appunti", desc: "Prendi appunti essenziali mentre leggi o ascolti.", min: 15, energy: "Operativo", cat: "Studio e Crescita" },
+      { title: "Fai esercizi o pratica applicata per 15 minuti", desc: "Metti subito alla prova la teoria su un esempio concreto.", min: 15, energy: "Al Massimo", cat: "Studio e Crescita" },
+      { title: "Ascolta un podcast formativo o lezione", desc: "Concentrati sul concetto principale da applicare oggi.", min: 15, energy: "Riserva", cat: "Studio e Crescita" },
+      { title: "Sessione di studio profondo da 30 minuti", desc: "Focus totale su un solo argomento con sintesi finale.", min: 30, energy: "Al Massimo", cat: "Studio e Crescita" },
+      { title: "Crea una mappa o schema di un argomento", desc: "Collega i punti principali per avere una visione chiara d'insieme.", min: 30, energy: "Operativo", cat: "Studio e Crescita" },
+
+      { title: "Controlla il saldo o una spesa recente", desc: "Guarda i numeri con lucidita e senza giudizio.", min: 5, energy: "Riserva", cat: "Soldi e Relazioni" },
+      { title: "Invia un messaggio sincero a una persona cara", desc: "Un saluto genuino o un pensiero per tenere vivo il legame.", min: 5, energy: "Riserva", cat: "Soldi e Relazioni" },
+      { title: "Segna una spesa fatta oggi", desc: "Annota subito l'uscita per mantenere chiarezza economica.", min: 5, energy: "Operativo", cat: "Soldi e Relazioni" },
+      { title: "Esprimi apprezzamento o gratitudine a qualcuno", desc: "Scrivi o di un grazie specifico e reale.", min: 5, energy: "Operativo", cat: "Soldi e Relazioni" },
+      { title: "Controlla abbonamenti o addebiti ricorrenti", desc: "Verifica se c'e qualcosa di inutile da disdire.", min: 5, energy: "Al Massimo", cat: "Soldi e Relazioni" },
+      { title: "Fai ordine nelle spese della settimana", desc: "Raggruppa uscite essenziali ed extra per capire dove va il budget.", min: 15, energy: "Operativo", cat: "Soldi e Relazioni" },
+      { title: "Chiama o manda un vocale a un amico o familiare", desc: "Dedica 15 minuti di ascolto autentico a chi ti sta a cuore.", min: 15, energy: "Operativo", cat: "Soldi e Relazioni" },
+      { title: "Chiarisci un piccolo malinteso o accordo", desc: "Comunica con calma e chiarezza per evitare tensioni.", min: 15, energy: "Al Massimo", cat: "Soldi e Relazioni" },
+      { title: "Pianifica il budget o un obiettivo economico", desc: "Definisci una regola pratica per risparmiare o allocare risorse.", min: 30, energy: "Al Massimo", cat: "Soldi e Relazioni" },
+      { title: "Dedica tempo di qualita pieno a una relazione", desc: "Presenza reale senza distrazioni per fare squadra o riconnetterti.", min: 30, energy: "Riserva", cat: "Soldi e Relazioni" }
+    ];
+
+    var selectedMin = 5;
+    var selectedEnergy = "Riserva";
+    var selectedCat = "Tutte";
+    var currentMove = null;
+    var secondsLeft = 300;
+    var intervalId = null;
+    var doneCount = 0;
+
+    try {
+      doneCount = Number(localStorage.getItem("zerostep_done") || 0);
+    } catch (e) {
+      doneCount = 0;
+    }
+    document.getElementById("doneCount").textContent = doneCount;
+
+    function clearActive(containerId) {
+      var btns = document.getElementById(containerId).getElementsByTagName("button");
+      for (var i = 0; i < btns.length; i++) {
+        btns[i].className = "chip";
+      }
+    }
+
+    function setTime(btn, min) {
+      clearActive("timeChips");
+      btn.className = "chip active";
+      selectedMin = min;
+    }
+
+    function setEnergy(btn, energy) {
+      clearActive("energyChips");
+      btn.className = "chip active";
+      selectedEnergy = energy;
+    }
+
+    function setCat(btn, cat) {
+      clearActive("catChips");
+      btn.className = "chip active";
+      selectedCat = cat;
+    }
+
+    function formatTime(sec) {
+      var m = Math.floor(sec / 60);
+      var s = sec % 60;
+      return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
+    }
+
+    function stopTimer() {
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+      document.getElementById("timerBtn").textContent = "AVVIA TIMER";
+    }
+
+    function pickMove() {
+      stopTimer();
+      var catPool = [];
+      for (var i = 0; i < MOVES.length; i++) {
+        if (selectedCat === "Tutte" || MOVES[i].cat === selectedCat) {
+          catPool.push(MOVES[i]);
+        }
+      }
+
+      var pool = [];
+      for (var j = 0; j < catPool.length; j++) {
+        if (catPool[j].min === selectedMin && catPool[j].energy === selectedEnergy) {
+          pool.push(catPool[j]);
+        }
+      }
+      if (pool.length === 0) {
+        for (var k = 0; k < catPool.length; k++) {
+          if (catPool[k].min === selectedMin || catPool[k].energy === selectedEnergy) {
+            pool.push(catPool[k]);
+          }
+        }
+      }
+      if (pool.length === 0) pool = catPool;
+      if (pool.length === 0) pool = MOVES;
+
+      currentMove = pool[Math.floor(Math.random() * pool.length)];
+      secondsLeft = selectedMin * 60;
+
+      document.getElementById("moveCard").style.display = "block";
+      document.getElementById("moveMeta").textContent = currentMove.cat + " · " + selectedMin + " min · " + currentMove.energy;
+      document.getElementById("moveTitle").textContent = currentMove.title;
+      document.getElementById("moveDesc").textContent = currentMove.desc;
+      document.getElementById("timerDisplay").textContent = formatTime(secondsLeft);
+    }
+
+    function toggleTimer() {
+      if (intervalId) {
+        stopTimer();
+        return;
+      }
+      document.getElementById("timerBtn").textContent = "METTI IN PAUSA";
+      intervalId = setInterval(function () {
+        if (secondsLeft > 0) {
+          secondsLeft--;
+          document.getElementById("timerDisplay").textContent = formatTime(secondsLeft);
+        } else {
+          stopTimer();
+        }
+      }, 1000);
+    }
+
+    function activate60s() {
+      stopTimer();
+      secondsLeft = 60;
+      document.getElementById("timerDisplay").textContent = formatTime(secondsLeft);
+      document.getElementById("moveDesc").textContent = "Modalita Sblocco 60s attiva: fai solo il primissimo micro-passo per 1 minuto.";
+    }
+
+    function completeMove() {
+      stopTimer();
+      doneCount++;
+      try {
+        localStorage.setItem("zerostep_done", String(doneCount));
+      } catch (e) {}
+      document.getElementById("doneCount").textContent = doneCount;
+      pickMove();
+    }
+  </script>
+</body>
+</html>
